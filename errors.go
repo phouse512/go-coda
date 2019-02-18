@@ -39,7 +39,7 @@ type InvalidRequestError struct {
 	err string
 }
 
-func (e *InvalidRequestError) Error() string {
+func (e InvalidRequestError) Error() string {
 	return fmt.Sprintf("Invalid request: %s", e.err)
 }
 
@@ -48,7 +48,7 @@ type InvalidTokenError struct {
 	err string
 }
 
-func (e *InvalidTokenError) Error() string {
+func (e InvalidTokenError) Error() string {
 	return fmt.Sprintf("Invalid token: %s", e.err)
 }
 
@@ -57,7 +57,7 @@ type RateLimitError struct {
 	err string
 }
 
-func (e *RateLimitError) Error() string {
+func (e RateLimitError) Error() string {
 	return fmt.Sprintf("Rate limited: %s", e.err)
 }
 
@@ -65,6 +65,6 @@ type ApiError struct {
 	err string
 }
 
-func (e *ApiError) Error() string {
+func (e ApiError) Error() string {
 	return fmt.Sprintf("Coda API Error: %s", e.err)
 }

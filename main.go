@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/schema"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"path"
 )
+
+var encoder = schema.NewEncoder()
 
 type Client struct {
 	BaseURL    *url.URL
@@ -42,12 +45,21 @@ func (c *Client) newRequest(method, methodPath string, body interface{}) (*http.
 	u := c.BaseURL.ResolveReference(rel)
 
 	var buf io.ReadWriter
-	if body != nil {
+	if body != nil && method == "POST" {
 		buf = new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(body)
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if body != nil && method == "GET" {
+		queryParams := url.Values{}
+		err := encoder.Encode(body, queryParams)
+		if err != nil {
+			return nil, err
+		}
+		u.RawQuery = queryParams.Encode()
 	}
 
 	req, err := http.NewRequest(method, u.String(), buf)
@@ -93,7 +105,7 @@ func (c *Client) GetDoc(id string) (GetDocumentResponse, error) {
 		log.Print("Unable to make request.")
 		return GetDocumentResponse{}, err
 	}
-	log.Print("Received status: ", string(resp.StatusCode))
+	log.Print("Received status: ", resp.Status)
 	var response = GetDocumentResponse{Document: document}
 	return response, err
 }
