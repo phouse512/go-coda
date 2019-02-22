@@ -4,15 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/schema"
+	"github.com/google/go-querystring/query"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"path"
 )
-
-var encoder = schema.NewEncoder()
 
 type Client struct {
 	BaseURL    *url.URL
@@ -54,11 +52,7 @@ func (c *Client) newRequest(method, methodPath string, body interface{}) (*http.
 	}
 
 	if body != nil && method == "GET" {
-		queryParams := url.Values{}
-		err := encoder.Encode(body, queryParams)
-		if err != nil {
-			return nil, err
-		}
+		queryParams, _ := query.Values(body)
 		u.RawQuery = queryParams.Encode()
 	}
 
