@@ -18,6 +18,10 @@ type ListFoldersResponse struct {
 	PaginationResponse
 }
 
+type GetFolderResponse struct {
+	Folder
+}
+
 func (c *Client) ListFolders(docId string, paginationPayload PaginationPayload) (ListFoldersResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/folders", docId)
 	req, err := c.newRequest("GET", docPath, paginationPayload)
@@ -34,4 +38,22 @@ func (c *Client) ListFolders(docId string, paginationPayload PaginationPayload) 
 	}
 
 	return foldersResponse, err
+}
+
+func (c *Client) GetFolder(docId string, folderIdOrName string) (GetFolderResponse, error) {
+	docPath := fmt.Sprintf("docs/%s/folders/%s", docId, folderIdOrName)
+	req, err := c.newRequest("GET", docPath, nil)
+	if err != nil {
+		log.Print("Unable to create new request.")
+		return GetFolderResponse{}, err
+	}
+
+	var folderResponse GetFolderResponse
+	_, err = c.do(req, &folderResponse)
+	if err != nil {
+		log.Print("Unable to make request.")
+		return GetFolderResponse{}, err
+	}
+
+	return folderResponse, err
 }
