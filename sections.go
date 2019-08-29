@@ -11,6 +11,11 @@ type Section struct {
 	Href        string `json:"href"`
 	Name        string `json:"name"`
 	BrowserLink string `json:"browserLink"`
+	Parent      struct {
+		Id   string `json:"id"`
+		Type string `json:"type"`
+		Href string `json:"href"`
+	} `json:"parent"`
 }
 
 type ListSectionsResponse struct {
@@ -19,13 +24,17 @@ type ListSectionsResponse struct {
 }
 
 type ListSectionsPayload struct {
-	Limit     int    `schema:"limit"`
-	PageToken string `schema:"pageToken"`
+	Limit     int    `url:"limit,omitempty"`
+	PageToken string `url:"pageToken,omitempty"`
 }
 
-func (c *Client) ListSections(docId string) (ListSectionsResponse, error) {
+type GetSectionResponse struct {
+	Section
+}
+
+func (c *Client) ListSections(docId string, sectionsPayload ListSectionsPayload) (ListSectionsResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/sections", docId)
-	req, err := c.newRequest("GET", docPath, nil)
+	req, err := c.newRequest("GET", docPath, sectionsPayload)
 	if err != nil {
 		log.Print("Unable to create new request.")
 		return ListSectionsResponse{}, err
@@ -39,4 +48,22 @@ func (c *Client) ListSections(docId string) (ListSectionsResponse, error) {
 	}
 
 	return sectionsResponse, err
+}
+
+func (c *Client) GetSection(docId string, sectionIdOrName string) (GetSectionResponse, error) {
+	docPath := fmt.Sprintf("docs/%s/sections/%s", docId, sectionIdOrName)
+	req, err := c.newRequest("GET", docPath, nil)
+	if err != nil {
+		log.Print("Unable to create new request.")
+		return GetSectionResponse{}, err
+	}
+
+	var sectionResponse GetSectionResponse
+	_, err = c.do(req, &sectionResponse)
+	if err != nil {
+		log.Print("Unable to make request.")
+		return GetSectionResponse{}, err
+	}
+
+	return sectionResponse, err
 }

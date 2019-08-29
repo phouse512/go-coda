@@ -27,6 +27,10 @@ func buildError(resp *http.Response) error {
 		return InvalidRequestError{err: errResp.StatusMessage}
 	case 401:
 		return InvalidTokenError{err: errResp.StatusMessage}
+	case 404:
+		return ResourceNotFoundError{err: errResp.StatusMessage}
+	case 410:
+		return ResourceDeletedError{err: errResp.StatusMessage}
 	case 429:
 		return RateLimitError{err: errResp.StatusMessage}
 	default:
@@ -67,4 +71,20 @@ type ApiError struct {
 
 func (e ApiError) Error() string {
 	return fmt.Sprintf("Coda API Error: %s", e.err)
+}
+
+type ResourceDeletedError struct {
+	err string
+}
+
+func (e ResourceDeletedError) Error() string {
+	return fmt.Sprintf("Resource deleted: %s", e.err)
+}
+
+type ResourceNotFoundError struct {
+	err string
+}
+
+func (e ResourceNotFoundError) Error() string {
+	return fmt.Sprintf("Resource not found: %s", e.err)
 }
