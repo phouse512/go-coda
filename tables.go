@@ -5,15 +5,6 @@ import (
 	"log"
 )
 
-type Column struct {
-	Id           string `json:"id"`
-	Type         string `json:"type"`
-	Href         string `json:"href"`
-	Name         string `json:"name"`
-	IsDisplay    bool   `json:"display"`
-	IsCalculated bool   `json:"calculated"`
-}
-
 type Table struct {
 	Id            string `json:"id"`
 	Type          string `json:"type"`
