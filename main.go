@@ -37,6 +37,20 @@ type Document struct {
 	UpdatedAt    string `json:"updatedAt"`
 }
 
+func (c *Client) apiCall(method, url string, body interface{}, response interface{}) error {
+	req, err := c.newRequest(method, url, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.do(req, &response)
+	if err != nil {
+		log.Print("Unable to make request.")
+		return err
+	}
+	return err
+}
+
 func (c *Client) newRequest(method, methodPath string, body interface{}) (*http.Request, error) {
 	rel := &url.URL{Path: methodPath}
 	rel.Path = path.Join(c.BaseURL.Path, rel.Path)
