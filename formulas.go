@@ -6,10 +6,11 @@ import (
 )
 
 type Formula struct {
-	Id   string `json:"id"`
-	Type string `json:"type"`
-	Href string `json:"href"`
-	Name string `json:"name"`
+	Id    string      `json:"id"`
+	Type  string      `json:"type"`
+	Href  string      `json:"href"`
+	Name  string      `json:"name"`
+	Value interface{} `json:"value"`
 }
 
 type ListFormulasResponse struct {
