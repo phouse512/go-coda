@@ -58,6 +58,22 @@ type InsertRowsParameters struct {
 
 type InsertRowsResponse struct{}
 
+type DeleteRowsParameters struct {
+	RowIds []string `json:"rowIds"`
+}
+
+type DeleteRowsResponse struct {
+	RowIds []string `json:"rowIds"`
+}
+
+type UpdateRowParameters struct {
+	Row RowParam `json:"row"`
+}
+
+type UpdateRowResponse struct {
+	Id string `json:"id"`
+}
+
 func (c *Client) ListTableRows(docId string, tableIdOrName string, listRowsParams ListRowsParameters) (ListRowsResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/tables/%s/rows", docId, tableIdOrName)
 	var rowsResp ListRowsResponse
@@ -86,4 +102,24 @@ func (c *Client) GetTableRow(docId string, tableIdOrName string, rowIdOrName str
 		log.Print("Unable to get table row with error.")
 	}
 	return rowResp, err
+}
+
+func (c *Client) DeleteRows(docId string, tableIdOrName string, deleteRowsParams DeleteRowsParameters) (DeleteRowsResponse, error) {
+	docPath := fmt.Sprintf("docs/%s/tables/%s/rows", docId, tableIdOrName)
+	var deleteResp DeleteRowsResponse
+	err := c.apiCall("DELETE", docPath, deleteRowsParams, &deleteResp)
+	if err != nil {
+		log.Print("Unable to delete rows with error.")
+	}
+	return deleteResp, err
+}
+
+func (c *Client) UpdateRow(docId string, tableIdOrName string, rowIdOrName string, updateRowParams UpdateRowParameters) (UpdateRowResponse, error) {
+	docPath := fmt.Sprintf("docs/%s/tables/%s/rows/%s", docId, tableIdOrName, rowIdOrName)
+	var updateResp UpdateRowResponse
+	err := c.apiCall("PUT", docPath, updateRowParams, &updateResp)
+	if err != nil {
+		log.Print("Unable to update row with error.")
+	}
+	return updateResp, err
 }
