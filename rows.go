@@ -42,13 +42,18 @@ type GetRowResponse struct {
 	Row
 }
 
+type CellParam struct {
+	Column string      `json:"column"`
+	Value  interface{} `json:"value"`
+}
+
+type RowParam struct {
+	Cells []CellParam `json:"cells"`
+}
+
 type InsertRowsParameters struct {
-	Rows []struct {
-		Cells []struct {
-			Column string      `json:"column"`
-			Value  interface{} `json:"value"`
-		} `json:"cells"`
-	} `json:"rows"`
+	Rows       []RowParam `json:"rows"`
+	KeyColumns []string   `json:"keyColumns,omitempty"`
 }
 
 type InsertRowsResponse struct{}
