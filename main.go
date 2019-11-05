@@ -57,7 +57,7 @@ func (c *Client) newRequest(method, methodPath string, body interface{}) (*http.
 	u := c.BaseURL.ResolveReference(rel)
 
 	var buf io.ReadWriter
-	if body != nil && method == "POST" {
+	if body != nil && (method == "POST" || method == "DELETE" || method == "PUT") {
 		buf = new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(body)
 		if err != nil {
