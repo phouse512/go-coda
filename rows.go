@@ -74,6 +74,23 @@ type UpdateRowResponse struct {
 	Id string `json:"id"`
 }
 
+type DeleteRowResponse struct {
+	Id string `json:"id"`
+}
+
+type ListViewRowsParameters struct {
+	Query          string `json:"query"`
+	SortBy         string `json:"sortBy"`
+	UseColumnNames bool   `json:"useColumnNames"`
+	ValueFormat    string `json:"valueFormat"`
+	PaginationPayload
+}
+
+type ListViewRowsResponse struct {
+	Rows []Row `json:"items"`
+	PaginationResponse
+}
+
 func (c *Client) ListTableRows(docId string, tableIdOrName string, listRowsParams ListRowsParameters) (ListRowsResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/tables/%s/rows", docId, tableIdOrName)
 	var rowsResp ListRowsResponse
@@ -122,4 +139,24 @@ func (c *Client) UpdateRow(docId string, tableIdOrName string, rowIdOrName strin
 		log.Print("Unable to update row with error.")
 	}
 	return updateResp, err
+}
+
+func (c *Client) DeleteRow(docId string, tableIdOrName string, rowIdOrName string) (DeleteRowResponse, error) {
+	docPath := fmt.Sprintf("docs/%s/tables/%s/rows/%s", docId, tableIdOrName, rowIdOrName)
+	var deleteResp DeleteRowResponse
+	err := c.apiCall("DELETE", docPath, nil, &deleteResp)
+	if err != nil {
+		log.Print("Unable to delete row with error.")
+	}
+	return deleteResp, err
+}
+
+func (c *Client) ListViewRows(docId string, viewIdOrName string, viewRowsParams ListViewRowsParameters) (ListViewRowsResponse, error) {
+	docPath := fmt.Sprintf("docs/%s/views/%s/rows", docId, viewIdOrName)
+	var rowsResp ListViewRowsResponse
+	err := c.apiCall("GET", docPath, viewRowsParams, &rowsResp)
+	if err != nil {
+		log.Print("Unable to get view rows with error.")
+	}
+	return rowsResp, err
 }
