@@ -23,9 +23,9 @@ type Row struct {
 }
 
 type ListRowsParameters struct {
-	Query          string `json:"query"`
-	SortBy         string `json:"sortBy"`
-	UseColumnNames bool   `json:"useColumnNames"`
+	Query          string `json:"query" url:"query"`
+	SortBy         string `json:"sortBy" url:"sortBy"`
+	UseColumnNames bool   `json:"useColumnNames" url:"useColumnNames"`
 	PaginationPayload
 }
 
