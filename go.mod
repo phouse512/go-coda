@@ -1,5 +1,3 @@
-module github.com/artsafin/go-coda
+module github.com/phouse512/go-coda
 
 require github.com/google/go-querystring v1.0.0
-
-go 1.13
