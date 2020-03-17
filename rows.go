@@ -30,7 +30,7 @@ type ListRowsParameters struct {
 }
 
 type GetRowParameters struct {
-	UseColumnNames bool `json:"useColumnNames"`
+	UseColumnNames bool `json:"useColumnNames" url:"useColumnNames"`
 }
 
 type ListRowsResponse struct {
@@ -79,10 +79,10 @@ type DeleteRowResponse struct {
 }
 
 type ListViewRowsParameters struct {
-	Query          string `json:"query"`
-	SortBy         string `json:"sortBy"`
-	UseColumnNames bool   `json:"useColumnNames"`
-	ValueFormat    string `json:"valueFormat"`
+	Query          string `json:"query" url:"query"`
+	SortBy         string `json:"sortBy" url:"sortBy"`
+	UseColumnNames bool   `json:"useColumnNames" url:"useColumnNames"`
+	ValueFormat    string `json:"valueFormat" url:"valueFormat"`
 	PaginationPayload
 }
 

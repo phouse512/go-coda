@@ -13,8 +13,8 @@ type Resource struct {
 }
 
 type ResolveBrowserLinkParameters struct {
-	Url               string `json:"url"`
-	DegradeGracefully bool   `json:"degradeGracefully"`
+	Url               string `json:"url" url:"url"`
+	DegradeGracefully bool   `json:"degradeGracefully" url:"degradeGracefully"`
 }
 
 type ResolveBrowserLinkResponse struct {
