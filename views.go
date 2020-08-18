@@ -22,6 +22,11 @@ type View struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
+type ListViewsParameters struct {
+	TableType string `url:"tableTypes"`
+	PaginationPayload
+}
+
 type ListViewsResponse struct {
 	Views []View `json:"items"`
 	PaginationResponse
