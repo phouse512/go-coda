@@ -152,7 +152,7 @@ func (c *Client) DeleteRow(docId string, tableIdOrName string, rowIdOrName strin
 }
 
 func (c *Client) ListViewRows(docId string, viewIdOrName string, viewRowsParams ListViewRowsParameters) (ListViewRowsResponse, error) {
-	docPath := fmt.Sprintf("docs/%s/views/%s/rows", docId, viewIdOrName)
+	docPath := fmt.Sprintf("docs/%s/tables/%s/rows", docId, viewIdOrName)
 	var rowsResp ListViewRowsResponse
 	err := c.apiCall("GET", docPath, viewRowsParams, &rowsResp)
 	if err != nil {

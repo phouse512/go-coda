@@ -46,7 +46,7 @@ func (c *Client) GetColumn(docId string, tableIdOrName string, columnIdOrName st
 }
 
 func (c *Client) ListViewColumns(docId string, viewIdOrName string, paginationPayload PaginationPayload) (ListColumnsResponse, error) {
-	docPath := fmt.Sprintf("docs/%s/views/%s/columns", docId, viewIdOrName)
+	docPath := fmt.Sprintf("docs/%s/tables/%s/columns", docId, viewIdOrName)
 	var columnsResp ListColumnsResponse
 	err := c.apiCall("GET", docPath, paginationPayload, &columnsResp)
 	if err != nil {

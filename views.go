@@ -37,9 +37,13 @@ type GetViewResponse struct {
 }
 
 func (c *Client) ListViews(docId string, paginationPayload PaginationPayload) (ListViewsResponse, error) {
-	docPath := fmt.Sprintf("docs/%s/views", docId)
+	docPath := fmt.Sprintf("docs/%s/tables", docId)
+	params := ListViewsParameters{
+		TableType:         "view",
+		PaginationPayload: paginationPayload,
+	}
 	var viewsResponse ListViewsResponse
-	err := c.apiCall("GET", docPath, paginationPayload, &viewsResponse)
+	err := c.apiCall("GET", docPath, params, &viewsResponse)
 	if err != nil {
 		log.Print("Unable to make api call with error.")
 		return viewsResponse, err
@@ -48,7 +52,7 @@ func (c *Client) ListViews(docId string, paginationPayload PaginationPayload) (L
 }
 
 func (c *Client) GetView(docId string, viewIdOrName string) (GetViewResponse, error) {
-	docPath := fmt.Sprintf("docs/%s/views/%s", docId, viewIdOrName)
+	docPath := fmt.Sprintf("docs/%s/tables/%s", docId, viewIdOrName)
 	req, err := c.newRequest("GET", docPath, nil)
 	if err != nil {
 		log.Print("Unable to create new request.")
