@@ -27,6 +27,8 @@ func buildError(resp *http.Response) error {
 		return InvalidRequestError{err: errResp.StatusMessage}
 	case 401:
 		return InvalidTokenError{err: errResp.StatusMessage}
+	case 403:
+		return UnauthorizedError{err: errResp.StatusMessage}
 	case 404:
 		return ResourceNotFoundError{err: errResp.StatusMessage}
 	case 410:
@@ -87,4 +89,12 @@ type ResourceNotFoundError struct {
 
 func (e ResourceNotFoundError) Error() string {
 	return fmt.Sprintf("Resource not found: %s", e.err)
+}
+
+type UnauthorizedError struct {
+	err string
+}
+
+func (e UnauthorizedError) Error() string {
+	return fmt.Sprintf("Token does not have access: %s", e.err)
 }

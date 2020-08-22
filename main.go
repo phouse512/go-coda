@@ -24,6 +24,7 @@ type GetDocumentResponse struct {
 
 type ListDocumentsResponse struct {
 	Documents []Document `json:"items"`
+	PaginationResponse
 }
 
 type Document struct {
