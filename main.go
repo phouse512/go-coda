@@ -18,26 +18,6 @@ type Client struct {
 	HttpClient *http.Client
 }
 
-type GetDocumentResponse struct {
-	Document Document
-}
-
-type ListDocumentsResponse struct {
-	Documents []Document `json:"items"`
-	PaginationResponse
-}
-
-type Document struct {
-	Id           string `json:"id"`
-	DocumentType string `json:"type"`
-	Href         string `json:"href"`
-	BrowserLink  string `json:"browserLink"`
-	Name         string `json:"name"`
-	Owner        string `json:"email"`
-	CreatedAt    string `json:"createdAt"`
-	UpdatedAt    string `json:"updatedAt"`
-}
-
 func (c *Client) apiCall(method, url string, body interface{}, response interface{}) error {
 	req, err := c.newRequest(method, url, body)
 	if err != nil {
@@ -98,41 +78,4 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 
 	err = json.NewDecoder(resp.Body).Decode(v)
 	return resp, err
-}
-
-func (c *Client) GetDoc(id string) (GetDocumentResponse, error) {
-	docPath := fmt.Sprintf("/docs/%s", id)
-	req, err := c.newRequest("GET", docPath, nil)
-	if err != nil {
-		log.Print("Unable to create new request.")
-		return GetDocumentResponse{}, err
-	}
-
-	var document Document
-	resp, err := c.do(req, &document)
-	if err != nil {
-		log.Print("Unable to make request.")
-		return GetDocumentResponse{}, err
-	}
-	log.Print("Received status: ", resp.Status)
-	var response = GetDocumentResponse{Document: document}
-	return response, err
-}
-
-func (c *Client) ListDocs() ([]Document, error) {
-	docPath := "/docs"
-	req, err := c.newRequest("GET", docPath, nil)
-	if err != nil {
-		log.Print("Unable to create new request.")
-		return nil, err
-	}
-
-	var documentsResponse ListDocumentsResponse
-	_, err = c.do(req, &documentsResponse)
-	if err != nil {
-		log.Print("Unable to make request.")
-		return nil, err
-	}
-
-	return documentsResponse.Documents, err
 }
