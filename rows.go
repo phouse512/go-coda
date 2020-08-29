@@ -26,6 +26,8 @@ type ListRowsParameters struct {
 	Query          string `json:"query" url:"query"`
 	SortBy         string `json:"sortBy" url:"sortBy"`
 	UseColumnNames bool   `json:"useColumnNames" url:"useColumnNames"`
+	ValueFormat    string `json:"valueFormat" url:"valueFormat"`
+	VisibleOnly    bool   `json:"visibleOnly" url:"visibleOnly"`
 	PaginationPayload
 }
 
@@ -56,14 +58,17 @@ type InsertRowsParameters struct {
 	KeyColumns []string   `json:"keyColumns,omitempty"`
 }
 
-type InsertRowsResponse struct{}
+type InsertRowsResponse struct {
+	RequestId string `json:"requestId"`
+}
 
 type DeleteRowsParameters struct {
 	RowIds []string `json:"rowIds"`
 }
 
 type DeleteRowsResponse struct {
-	RowIds []string `json:"rowIds"`
+	RowIds    []string `json:"rowIds"`
+	RequestId string   `json:"requestId"`
 }
 
 type UpdateRowParameters struct {
@@ -71,11 +76,13 @@ type UpdateRowParameters struct {
 }
 
 type UpdateRowResponse struct {
-	Id string `json:"id"`
+	Id        string `json:"id"`
+	RequestId string `json:"requestId"`
 }
 
 type DeleteRowResponse struct {
-	Id string `json:"id"`
+	Id        string `json:"id"`
+	RequestId string `json:"requestId"`
 }
 
 type ListViewRowsParameters struct {
@@ -89,6 +96,12 @@ type ListViewRowsParameters struct {
 type ListViewRowsResponse struct {
 	Rows []Row `json:"items"`
 	PaginationResponse
+}
+
+type PushButtonResponse struct {
+	RequestId string `json:"requestId"`
+	RowId     string `json:"rowId"`
+	ColumnId  string `json:"columnId"`
 }
 
 func (c *Client) ListTableRows(docId string, tableIdOrName string, listRowsParams ListRowsParameters) (ListRowsResponse, error) {
@@ -159,4 +172,14 @@ func (c *Client) ListViewRows(docId string, viewIdOrName string, viewRowsParams 
 		log.Print("Unable to get view rows with error.")
 	}
 	return rowsResp, err
+}
+
+func (c *Client) PushButton(docId string, tableIdOrName string, rowIdOrName string, columnIdOrName string) (PushButtonResponse, error) {
+	docPath := fmt.Sprintf("docs/%s/tables/%s/rows/%s/buttons/%s", docId, tableIdOrName, rowIdOrName, columnIdOrName)
+	var pushResp PushButtonResponse
+	err := c.apiCall("POST", docPath, nil, &pushResp)
+	if err != nil {
+		log.Print("Unable to push button with error.")
+	}
+	return pushResp, err
 }

@@ -5,64 +5,74 @@ import (
 	"log"
 )
 
+type TableFilter struct {
+	Valid           bool `json:"valid"`
+	IsVolatile      bool `json:"isVolatile"`
+	HasUserFormula  bool `json:"hasUserFormula"`
+	HasTodayFormula bool `json:"hasTodayFormula"`
+	HasNowFormula   bool `json:"hasNowFormula"`
+}
+
 type Table struct {
-	Id            string `json:"id"`
-	Type          string `json:"type"`
-	Href          string `json:"href"`
-	Name          string `json:"name"`
-	BrowserLink   string `json:"browserLink"`
+	TableReference
 	DisplayColumn Column `json:"displayColumn"`
 	RowCount      int    `json:"rowCount"`
 	Sorts         []struct {
 		Column    Column `json:"column"`
 		Direction string `json:"direction"`
 	} `json:"sorts"`
-	Layout    string `json:"layout"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	Layout      string         `json:"layout"`
+	CreatedAt   string         `json:"createdAt"`
+	UpdatedAt   string         `json:"updatedAt"`
+	ParentTable TableReference `json:"parentTable"`
+	Filter      TableFilter    `json:"filter"`
+}
+
+type TableReference struct {
+	Id          string        `json:"id"`
+	Type        string        `json:"type"`
+	TableType   string        `json:"tableType"`
+	BrowserLink string        `json:"browserLink"`
+	Href        string        `json:"href"`
+	Name        string        `json:"name"`
+	Parent      PageReference `json:"parent"`
 }
 
 type ListTablesResponse struct {
-	Tables []Table `json:"items"`
+	Tables []TableReference `json:"items"`
 	PaginationResponse
+}
+
+type ListTablesPayload struct {
+	SortBy     string `url:"sortBy,omitempty"`
+	TableTypes string `url:"tableTypes,omitempty"`
+	PaginationPayload
 }
 
 type GetTableResponse struct {
 	Table
 }
 
-func (c *Client) ListTables(docId string, paginationPayload PaginationPayload) (ListTablesResponse, error) {
+func (c *Client) ListTables(docId string, payload ListTablesPayload) (ListTablesResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/tables", docId)
-	req, err := c.newRequest("GET", docPath, paginationPayload)
+
+	var tablesResp ListTablesResponse
+	err := c.apiCall("GET", docPath, payload, &tablesResp)
 	if err != nil {
-		log.Print("Unable to create new request.")
-		return ListTablesResponse{}, err
+		log.Print("Unable to list tables with error.")
 	}
 
-	var tablesResponse ListTablesResponse
-	_, err = c.do(req, &tablesResponse)
-	if err != nil {
-		log.Print("Unable to make request.")
-		return ListTablesResponse{}, err
-	}
-
-	return tablesResponse, err
+	return tablesResp, err
 }
 
 func (c *Client) GetTable(docId string, tableIdOrName string) (GetTableResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/tables/%s", docId, tableIdOrName)
-	req, err := c.newRequest("GET", docPath, nil)
+
+	var tableResp GetTableResponse
+	err := c.apiCall("GET", docPath, nil, &tableResp)
 	if err != nil {
-		log.Print("Unable to create new request.")
-		return GetTableResponse{}, err
+		log.Print("Unable to get table with error.")
 	}
 
-	var tableResponse GetTableResponse
-	_, err = c.do(req, &tableResponse)
-	if err != nil {
-		log.Print("Unable to make request.")
-		return GetTableResponse{}, err
-	}
-
-	return tableResponse, err
+	return tableResp, err
 }

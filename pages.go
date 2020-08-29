@@ -65,37 +65,25 @@ type RequestResponse struct {
 	Id        string `json:"id"`
 }
 
-func (c *Client) ListPages(docId string, pagesPayload ListPagesPayload) (ListPagesResponse, error) {
+func (c *Client) ListPages(docId string, paginationPayload PaginationPayload) (ListPagesResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/pages", docId)
-	req, err := c.newRequest("GET", docPath, pagesPayload)
+
+	var pagesResp ListPagesResponse
+	err := c.apiCall("GET", docPath, paginationPayload, &pagesResp)
 	if err != nil {
-		log.Print("Unable to create new request.")
-		return ListPagesResponse{}, err
+		log.Print("Unable to list pages with error.")
 	}
 
-	var pagesResponse ListPagesResponse
-	_, err = c.do(req, &pagesResponse)
-	if err != nil {
-		log.Print("Unable to make request.")
-		return ListPagesResponse{}, err
-	}
-
-	return pagesResponse, err
+	return pagesResp, err
 }
 
 func (c *Client) GetPage(docId string, pageIdOrName string) (GetPageResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/pages/%s", docId, sectionIdOrName)
-	req, err := c.newRequest("GET", docPath, nil)
-	if err != nil {
-		log.Print("Unable to create new request.")
-		return GetPageResponse{}, err
-	}
 
 	var pageResponse GetPageResponse
-	_, err = c.do(req, &pageResponse)
+	err := c.apiCall("GET", docPath, nil, &pageResponse)
 	if err != nil {
-		log.Print("Unable to make request.")
-		return GetPageResponse{}, err
+		log.Print("Unable to get page with error.")
 	}
 
 	return pageResponse, err
