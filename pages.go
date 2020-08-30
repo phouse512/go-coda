@@ -27,16 +27,12 @@ type PageReference struct {
 }
 
 type Page struct {
-	Id          string          `json:"id"`
-	Type        string          `json:"type"`
-	Href        string          `json:"href"`
-	Name        string          `json:"name"`
-	BrowserLink string          `json:"browserLink"`
-	Children    []PageReference `json:"children"`
-	Subtitle    string          `json:"subtitle"`
-	Icon        Icon            `json:"icon"`
-	Image       Image           `json:"image"`
-	Parent      PageReference   `json:"parent"`
+	PageReference
+	Children []PageReference `json:"children"`
+	Subtitle string          `json:"subtitle"`
+	Icon     Icon            `json:"icon"`
+	Image    Image           `json:"image"`
+	Parent   PageReference   `json:"parent"`
 }
 
 type ListPagesResponse struct {
@@ -78,7 +74,7 @@ func (c *Client) ListPages(docId string, paginationPayload PaginationPayload) (L
 }
 
 func (c *Client) GetPage(docId string, pageIdOrName string) (GetPageResponse, error) {
-	docPath := fmt.Sprintf("docs/%s/pages/%s", docId, sectionIdOrName)
+	docPath := fmt.Sprintf("docs/%s/pages/%s", docId, pageIdOrName)
 
 	var pageResponse GetPageResponse
 	err := c.apiCall("GET", docPath, nil, &pageResponse)

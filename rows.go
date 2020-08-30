@@ -75,6 +75,10 @@ type UpdateRowParameters struct {
 	Row RowParam `json:"row"`
 }
 
+type RowQueryParams struct {
+	DisableParsing bool `url:"disableParsing"`
+}
+
 type UpdateRowResponse struct {
 	Id        string `json:"id"`
 	RequestId string `json:"requestId"`
@@ -114,10 +118,11 @@ func (c *Client) ListTableRows(docId string, tableIdOrName string, listRowsParam
 	return rowsResp, err
 }
 
-func (c *Client) InsertRows(docId string, tableIdOrName string, insertRowParams InsertRowsParameters) (InsertRowsResponse, error) {
+func (c *Client) InsertRows(docId string, tableIdOrName string, disableParsing bool, insertRowParams InsertRowsParameters) (InsertRowsResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/tables/%s/rows", docId, tableIdOrName)
+	queryParams := RowQueryParams{DisableParsing: disableParsing}
 	var rowsResp InsertRowsResponse
-	err := c.apiCall("POST", docPath, insertRowParams, &rowsResp)
+	err := c.apiCallFull("POST", docPath, insertRowParams, queryParams, &rowsResp)
 	if err != nil {
 		log.Print("Unable to insert rows with error.")
 	}
@@ -144,10 +149,11 @@ func (c *Client) DeleteRows(docId string, tableIdOrName string, deleteRowsParams
 	return deleteResp, err
 }
 
-func (c *Client) UpdateRow(docId string, tableIdOrName string, rowIdOrName string, updateRowParams UpdateRowParameters) (UpdateRowResponse, error) {
+func (c *Client) UpdateRow(docId string, tableIdOrName string, rowIdOrName string, disableParsing bool, updateRowParams UpdateRowParameters) (UpdateRowResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/tables/%s/rows/%s", docId, tableIdOrName, rowIdOrName)
+	queryParams := RowQueryParams{DisableParsing: disableParsing}
 	var updateResp UpdateRowResponse
-	err := c.apiCall("PUT", docPath, updateRowParams, &updateResp)
+	err := c.apiCallFull("PUT", docPath, updateRowParams, queryParams, &updateResp)
 	if err != nil {
 		log.Print("Unable to update row with error.")
 	}
