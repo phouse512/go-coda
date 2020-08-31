@@ -13,6 +13,21 @@ your `go.mod` file automatically.
 
 ```
 import "phouse512/go-coda"
+
+import "log"
+
+
+func main() {
+    codaClient := DefaultClient("sample-api-key")
+
+    docs, err := codaClient.ListDocuments(codaClient.ListDocumentsPayload{})
+    if err != nil {
+        panic(err) 
+    }
+
+    log.Printf("All documents: %s", docs)
+}
+
 ```
 
 

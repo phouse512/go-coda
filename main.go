@@ -3,6 +3,7 @@ package coda
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/google/go-querystring/query"
 	"io"
 	"log"
@@ -11,10 +12,41 @@ import (
 	"path"
 )
 
+const BaseUrl = "https://coda.io/apis/v1"
+
+type transport struct {
+	defaultTransport http.RoundTripper
+	token            string
+}
+
+func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Add("Authorization", fmt.Sprintf("%s %s", "Bearer", t.token))
+	return t.defaultTransport.RoundTrip(req)
+}
+
 type Client struct {
 	BaseURL    *url.URL
 	UserAgent  string
 	HttpClient *http.Client
+}
+
+func DefaultClient(apiKey string) *Client {
+	httpClient := &http.Client{
+		Transport: &transport{
+			defaultTransport: http.DefaultTransport,
+			token:            apiKey,
+		},
+	}
+
+	u, _ := url.Parse(BaseUrl)
+
+	codaClient := &Client{
+		UserAgent:  "golang_bot/1.0",
+		HttpClient: httpClient,
+		BaseURL:    u,
+	}
+
+	return codaClient
 }
 
 func (c *Client) apiCall(method, url string, body interface{}, response interface{}) error {
