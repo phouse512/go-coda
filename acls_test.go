@@ -1,8 +1,9 @@
 package coda
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
-	"log"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -27,16 +28,29 @@ func BuildTestClient(testServerUrl string) *Client {
 	return codaClient
 }
 
-func TestDeletePermission(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		assert.Equal(t, req.URL.String(), "/docs/fakeDoc/acl/permissions/fakePermission")
-		rw.Write([]byte(`{}`))
-	}))
-	defer server.Close()
+func BuildTestServer(expectedPath, sampleDataPath string, expectedStatus int, t *testing.T) *httptest.Server {
+	// load data from filepath
+	data, err := ioutil.ReadFile(sampleDataPath)
+	if err != nil {
+		panic(err)
+	}
 
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		assert.Equal(t, req.URL.String(), expectedPath)
+		rw.WriteHeader(expectedStatus)
+		rw.Write(data)
+	}))
+	return server
+}
+
+func TestDeletePermission(t *testing.T) {
+	docId := "fakeDoc"
+	permission := "fakePermission"
+	expectedPath := fmt.Sprintf("/docs/%s/acl/permissions/%s", docId, permission)
+	server := BuildTestServer(expectedPath, "test_data/delete_permission.json", 200, t)
+	defer server.Close()
 	testClient := BuildTestClient(server.URL)
 
-	resp, err := testClient.DeletePermission("fakeDoc", "fakePermission")
-	log.Print(err)
-	log.Print(resp)
+	_, err := testClient.DeletePermission(docId, permission)
+	assert.Nil(t, err)
 }
