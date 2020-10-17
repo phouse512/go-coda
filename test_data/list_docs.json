@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "id": "AbCDeFGH",
+      "type": "doc",
+      "href": "https://coda.io/apis/v1/docs/AbCDeFGH",
+      "browserLink": "https://coda.io/d/_dAbCDeFGH",
+      "icon": {
+        "name": "string",
+        "type": "string",
+        "browserLink": "https://cdn.coda.io/icons/png/color/icon-32.png"
+      },
+      "name": "Product Launch Hub",
+      "owner": "user@example.com",
+      "ownerName": "Some User",
+      "docSize": {
+        "totalRowCount": 31337,
+        "tableAndViewCount": 42,
+        "pageCount": 10,
+        "overApiSizeLimit": false
+      },
+      "sourceDoc": {
+        "id": "AbCDeFGH",
+        "type": "doc",
+        "href": "https://coda.io/apis/v1/docs/AbCDeFGH",
+        "browserLink": "https://coda.io/d/_dAbCDeFGH"
+      },
+      "createdAt": "2018-04-11T00:18:57.946Z",
+      "updatedAt": "2018-04-11T00:18:57.946Z",
+      "published": {
+        "description": "Hello World!",
+        "browserLink": "https://coda.io/@coda/hello-world",
+        "imageLink": "string",
+        "copyable": true,
+        "discoverable": true,
+        "earnCredit": true,
+        "mode": "view",
+        "categories": [
+          "Project Management"
+        ]
+      },
+      "workspaceId": "ws-1Ab234",
+      "folderId": "fl-1Ab234"
+    }
+  ],
+  "href": "https://coda.io/apis/v1/docs?limit=20",
+  "nextPageToken": "20",
+  "nextPageLink": "https://coda.io/apis/v1/docs?pageToken=eyJsaW1pd"
+}

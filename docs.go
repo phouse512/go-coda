@@ -6,13 +6,13 @@ import (
 )
 
 type DocPublished struct {
-	BrowserLink  string        `json:"browserLink"`
-	Discoverable bool          `json:"discoverable"`
-	EarnCredit   bool          `json:"earnCredit"`
-	Mode         string        `json:"mode"`
-	Categories   []DocCategory `json:"categories"`
-	Description  string        `json:"description"`
-	ImageLink    string        `json:"imageLink"`
+	BrowserLink  string   `json:"browserLink"`
+	Discoverable bool     `json:"discoverable"`
+	EarnCredit   bool     `json:"earnCredit"`
+	Mode         string   `json:"mode"`
+	Categories   []string `json:"categories"`
+	Description  string   `json:"description"`
+	ImageLink    string   `json:"imageLink"`
 }
 
 type DocSize struct {
