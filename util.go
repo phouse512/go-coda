@@ -28,6 +28,11 @@ func buildTestClient(testServerUrl string) *Client {
 }
 
 func buildTestServer(expectedPath, sampleDataPath string, expectedStatus int, t *testing.T) *httptest.Server {
+	return buildTestServerFull(expectedPath, sampleDataPath, expectedStatus, "", t)
+}
+
+func buildTestServerFull(expectedPath, sampleDataPath string, expectedStatus int, expectedBody string, t *testing.T) *httptest.Server {
+
 	// load data from filepath
 	data, err := ioutil.ReadFile(sampleDataPath)
 	if err != nil {
@@ -35,6 +40,13 @@ func buildTestServer(expectedPath, sampleDataPath string, expectedStatus int, t 
 	}
 
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		if expectedBody != "" {
+			bodyBytes, err := ioutil.ReadAll(req.Body)
+			if err != nil {
+				panic(err)
+			}
+			assert.Equal(t, string(bodyBytes), expectedBody)
+		}
 		assert.Equal(t, req.URL.String(), expectedPath)
 		rw.WriteHeader(expectedStatus)
 		rw.Write(data)

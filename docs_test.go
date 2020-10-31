@@ -36,3 +36,28 @@ func TestListDocs(t *testing.T) {
 
 	assert.Equal(t, "20", docsResp.PaginationResponse.NextPageToken)
 }
+
+func TestGetDoc(t *testing.T) {
+	docId := "AbCDeFGH"
+	expectedPath := fmt.Sprintf("/docs/%s", docId)
+	server := buildTestServer(expectedPath, "test_data/docs_get.json", 200, t)
+	defer server.Close()
+	testClient := buildTestClient(server.URL)
+
+	resp, err := testClient.GetDoc(docId)
+	assert.Nil(t, err)
+	assert.Equal(t, docId, resp.Document.Id)
+	assert.Equal(t, "doc", resp.Document.Type)
+	assert.Equal(t, "https://coda.io/@coda/hello-world", resp.Document.Published.BrowserLink)
+}
+
+func TestDeleteDoc(t *testing.T) {
+	docId := "testDoc"
+	expectedPath := fmt.Sprintf("/docs/%s", docId)
+	server := buildTestServer(expectedPath, "test_data/docs_delete.json", 202, t)
+	defer server.Close()
+	testClient := buildTestClient(server.URL)
+
+	_, err := testClient.DeleteDocument(docId)
+	assert.Nil(t, err)
+}

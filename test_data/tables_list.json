@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "id": "grid-pqRst-U",
+      "type": "table",
+      "tableType": "table",
+      "href": "https://coda.io/apis/v1/docs/AbCDeFGH/tables/grid-pqRst-U",
+      "browserLink": "https://coda.io/d/_dAbCDeFGH/#Teams-and-Tasks_tpqRst-U",
+      "name": "Tasks",
+      "parent": {
+        "id": "canvas-IjkLmnO",
+        "type": "page",
+        "href": "https://coda.io/apis/v1/docs/AbCDeFGH/pages/canvas-IjkLmnO",
+        "browserLink": "https://coda.io/d/_dAbCDeFGH/Launch-Status_sumnO",
+        "name": "Launch Status"
+      }
+    }
+  ],
+  "href": "https://coda.io/apis/v1/docs/AbCDeFGH/tables?limit=20",
+  "nextPageToken": "20",
+  "nextPageLink": "https://coda.io/apis/v1/docs/AbCDeFGH/tables?pageToken=eyJsaW1pd"
+}

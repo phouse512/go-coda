@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "id": "i-tuVwxYz",
+      "type": "row",
+      "href": "https://coda.io/apis/v1/docs/AbCDeFGH/tables/grid-pqRst-U/rows/i-RstUv-W",
+      "name": "Apple",
+      "index": 7,
+      "browserLink": "https://coda.io/d/_dAbCDeFGH#Teams-and-Tasks_tpqRst-U/_rui-tuVwxYz",
+      "createdAt": "2018-04-11T00:18:57.946Z",
+      "updatedAt": "2018-04-11T00:18:57.946Z",
+      "values": {
+        "c-tuVwxYz": "Apple",
+        "c-bCdeFgh": [
+          "$12.34",
+          "$56.78"
+        ]
+      }
+    }
+  ],
+  "href": "https://coda.io/apis/v1/docs/AbCDeFGH/tables/grid-pqRst-U/rows?limit=20",
+  "nextPageToken": "20",
+  "nextPageLink": "https://coda.io/apis/v1/docs/AbCDeFGH/tables/grid-pqRst-U/rows?pageToken=eyJsaW1pd"
+}
