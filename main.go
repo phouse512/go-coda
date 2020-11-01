@@ -12,29 +12,41 @@ import (
 	"path"
 )
 
+const BaseUrl = "https://coda.io/apis/v1"
+
+type transport struct {
+	defaultTransport http.RoundTripper
+	token            string
+}
+
+func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Add("Authorization", fmt.Sprintf("%s %s", "Bearer", t.token))
+	return t.defaultTransport.RoundTrip(req)
+}
+
 type Client struct {
 	BaseURL    *url.URL
 	UserAgent  string
 	HttpClient *http.Client
 }
 
-type GetDocumentResponse struct {
-	Document Document
-}
+func DefaultClient(apiKey string) *Client {
+	httpClient := &http.Client{
+		Transport: &transport{
+			defaultTransport: http.DefaultTransport,
+			token:            apiKey,
+		},
+	}
 
-type ListDocumentsResponse struct {
-	Documents []Document `json:"items"`
-}
+	u, _ := url.Parse(BaseUrl)
 
-type Document struct {
-	Id           string `json:"id"`
-	DocumentType string `json:"type"`
-	Href         string `json:"href"`
-	BrowserLink  string `json:"browserLink"`
-	Name         string `json:"name"`
-	Owner        string `json:"email"`
-	CreatedAt    string `json:"createdAt"`
-	UpdatedAt    string `json:"updatedAt"`
+	codaClient := &Client{
+		UserAgent:  "golang_bot/1.0",
+		HttpClient: httpClient,
+		BaseURL:    u,
+	}
+
+	return codaClient
 }
 
 func (c *Client) apiCall(method, url string, body interface{}, response interface{}) error {
@@ -49,6 +61,53 @@ func (c *Client) apiCall(method, url string, body interface{}, response interfac
 		return err
 	}
 	return err
+}
+
+func (c *Client) apiCallFull(method, url string, body, queryParams, response interface{}) error {
+	req, err := c.newRequestFull(method, url, body, queryParams)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.do(req, &response)
+	if err != nil {
+		log.Print("Unable to make request.")
+		return err
+	}
+	return err
+}
+
+func (c *Client) newRequestFull(method, methodPath string, body interface{}, queryParams interface{}) (*http.Request, error) {
+	rel := &url.URL{Path: methodPath}
+	rel.Path = path.Join(c.BaseURL.Path, rel.Path)
+	u := c.BaseURL.ResolveReference(rel)
+
+	var buf io.ReadWriter
+	buf = new(bytes.Buffer)
+	err := json.NewEncoder(buf).Encode(body)
+	if err != nil {
+		return nil, err
+	}
+
+	encodedParams, err := query.Values(queryParams)
+	if err != nil {
+		return nil, err
+	}
+	u.RawQuery = encodedParams.Encode()
+
+	req, err := http.NewRequest(method, u.String(), buf)
+	if err != nil {
+		return nil, err
+	}
+
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", c.UserAgent)
+
+	return req, nil
 }
 
 func (c *Client) newRequest(method, methodPath string, body interface{}) (*http.Request, error) {
@@ -97,41 +156,4 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 
 	err = json.NewDecoder(resp.Body).Decode(v)
 	return resp, err
-}
-
-func (c *Client) GetDoc(id string) (GetDocumentResponse, error) {
-	docPath := fmt.Sprintf("/docs/%s", id)
-	req, err := c.newRequest("GET", docPath, nil)
-	if err != nil {
-		log.Print("Unable to create new request.")
-		return GetDocumentResponse{}, err
-	}
-
-	var document Document
-	resp, err := c.do(req, &document)
-	if err != nil {
-		log.Print("Unable to make request.")
-		return GetDocumentResponse{}, err
-	}
-	log.Print("Received status: ", resp.Status)
-	var response = GetDocumentResponse{Document: document}
-	return response, err
-}
-
-func (c *Client) ListDocs() ([]Document, error) {
-	docPath := "/docs"
-	req, err := c.newRequest("GET", docPath, nil)
-	if err != nil {
-		log.Print("Unable to create new request.")
-		return nil, err
-	}
-
-	var documentsResponse ListDocumentsResponse
-	_, err = c.do(req, &documentsResponse)
-	if err != nil {
-		log.Print("Unable to make request.")
-		return nil, err
-	}
-
-	return documentsResponse.Documents, err
 }

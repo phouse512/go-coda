@@ -26,6 +26,8 @@ type ListRowsParameters struct {
 	Query          string `json:"query" url:"query"`
 	SortBy         string `json:"sortBy" url:"sortBy"`
 	UseColumnNames bool   `json:"useColumnNames" url:"useColumnNames"`
+	ValueFormat    string `json:"valueFormat" url:"valueFormat"`
+	VisibleOnly    bool   `json:"visibleOnly" url:"visibleOnly"`
 	PaginationPayload
 }
 
@@ -56,26 +58,35 @@ type InsertRowsParameters struct {
 	KeyColumns []string   `json:"keyColumns,omitempty"`
 }
 
-type InsertRowsResponse struct{}
+type InsertRowsResponse struct {
+	RequestId string `json:"requestId"`
+}
 
 type DeleteRowsParameters struct {
 	RowIds []string `json:"rowIds"`
 }
 
 type DeleteRowsResponse struct {
-	RowIds []string `json:"rowIds"`
+	RowIds    []string `json:"rowIds"`
+	RequestId string   `json:"requestId"`
 }
 
 type UpdateRowParameters struct {
 	Row RowParam `json:"row"`
 }
 
+type RowQueryParams struct {
+	DisableParsing bool `url:"disableParsing"`
+}
+
 type UpdateRowResponse struct {
-	Id string `json:"id"`
+	Id        string `json:"id"`
+	RequestId string `json:"requestId"`
 }
 
 type DeleteRowResponse struct {
-	Id string `json:"id"`
+	Id        string `json:"id"`
+	RequestId string `json:"requestId"`
 }
 
 type ListViewRowsParameters struct {
@@ -91,6 +102,12 @@ type ListViewRowsResponse struct {
 	PaginationResponse
 }
 
+type PushButtonResponse struct {
+	RequestId string `json:"requestId"`
+	RowId     string `json:"rowId"`
+	ColumnId  string `json:"columnId"`
+}
+
 func (c *Client) ListTableRows(docId string, tableIdOrName string, listRowsParams ListRowsParameters) (ListRowsResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/tables/%s/rows", docId, tableIdOrName)
 	var rowsResp ListRowsResponse
@@ -101,10 +118,11 @@ func (c *Client) ListTableRows(docId string, tableIdOrName string, listRowsParam
 	return rowsResp, err
 }
 
-func (c *Client) InsertRows(docId string, tableIdOrName string, insertRowParams InsertRowsParameters) (InsertRowsResponse, error) {
+func (c *Client) InsertRows(docId string, tableIdOrName string, disableParsing bool, insertRowParams InsertRowsParameters) (InsertRowsResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/tables/%s/rows", docId, tableIdOrName)
+	queryParams := RowQueryParams{DisableParsing: disableParsing}
 	var rowsResp InsertRowsResponse
-	err := c.apiCall("POST", docPath, insertRowParams, &rowsResp)
+	err := c.apiCallFull("POST", docPath, insertRowParams, queryParams, &rowsResp)
 	if err != nil {
 		log.Print("Unable to insert rows with error.")
 	}
@@ -131,10 +149,11 @@ func (c *Client) DeleteRows(docId string, tableIdOrName string, deleteRowsParams
 	return deleteResp, err
 }
 
-func (c *Client) UpdateRow(docId string, tableIdOrName string, rowIdOrName string, updateRowParams UpdateRowParameters) (UpdateRowResponse, error) {
+func (c *Client) UpdateRow(docId string, tableIdOrName string, rowIdOrName string, disableParsing bool, updateRowParams UpdateRowParameters) (UpdateRowResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/tables/%s/rows/%s", docId, tableIdOrName, rowIdOrName)
+	queryParams := RowQueryParams{DisableParsing: disableParsing}
 	var updateResp UpdateRowResponse
-	err := c.apiCall("PUT", docPath, updateRowParams, &updateResp)
+	err := c.apiCallFull("PUT", docPath, updateRowParams, queryParams, &updateResp)
 	if err != nil {
 		log.Print("Unable to update row with error.")
 	}
@@ -152,11 +171,21 @@ func (c *Client) DeleteRow(docId string, tableIdOrName string, rowIdOrName strin
 }
 
 func (c *Client) ListViewRows(docId string, viewIdOrName string, viewRowsParams ListViewRowsParameters) (ListViewRowsResponse, error) {
-	docPath := fmt.Sprintf("docs/%s/views/%s/rows", docId, viewIdOrName)
+	docPath := fmt.Sprintf("docs/%s/tables/%s/rows", docId, viewIdOrName)
 	var rowsResp ListViewRowsResponse
 	err := c.apiCall("GET", docPath, viewRowsParams, &rowsResp)
 	if err != nil {
 		log.Print("Unable to get view rows with error.")
 	}
 	return rowsResp, err
+}
+
+func (c *Client) PushButton(docId string, tableIdOrName string, rowIdOrName string, columnIdOrName string) (PushButtonResponse, error) {
+	docPath := fmt.Sprintf("docs/%s/tables/%s/rows/%s/buttons/%s", docId, tableIdOrName, rowIdOrName, columnIdOrName)
+	var pushResp PushButtonResponse
+	err := c.apiCall("POST", docPath, nil, &pushResp)
+	if err != nil {
+		log.Print("Unable to push button with error.")
+	}
+	return pushResp, err
 }

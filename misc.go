@@ -14,7 +14,7 @@ type Resource struct {
 
 type ResolveBrowserLinkParameters struct {
 	Url               string `json:"url" url:"url"`
-	DegradeGracefully bool   `json:"degradeGracefully" url:"degradeGracefully"`
+	DegradeGracefully bool   `json:"degradeGracefully" url:"degradeGracefully,omitempty"`
 }
 
 type ResolveBrowserLinkResponse struct {
@@ -22,6 +22,10 @@ type ResolveBrowserLinkResponse struct {
 	Href        string   `json:"href"`
 	Resource    Resource `json:"resource"`
 	BrowserLink string   `json:"browserLink"`
+}
+
+type MutationStatusResponse struct {
+	IsCompleted bool `json:"completed"`
 }
 
 func (c *Client) ResolveBrowserLink(browserLinkParams ResolveBrowserLinkParameters) (ResolveBrowserLinkResponse, error) {
@@ -32,4 +36,15 @@ func (c *Client) ResolveBrowserLink(browserLinkParams ResolveBrowserLinkParamete
 		log.Print("Unable to resolve browser link.")
 	}
 	return linkResp, err
+}
+
+func (c *Client) GetMutationStatus(requestId string) (MutationStatusResponse, error) {
+	docPath := fmt.Sprintf("mutationStatus/%s", requestId)
+	var statusResp MutationStatusResponse
+	err := c.apiCall("GET", docPath, nil, &statusResp)
+	if err != nil {
+		log.Print("Unable to get mutation status with error.")
+	}
+
+	return statusResp, err
 }

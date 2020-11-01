@@ -6,12 +6,13 @@ import (
 )
 
 type UserInfoResponse struct {
-	Name      string `json:"name"`
-	LoginId   string `json:"loginId"`
-	Type      string `json:"type"`
-	Scoped    bool   `json:"scoped"`
-	TokenName string `json:"tokenName"`
-	Href      string `json:"href"`
+	Name        string `json:"name"`
+	LoginId     string `json:"loginId"`
+	Type        string `json:"type"`
+	Scoped      bool   `json:"scoped"`
+	TokenName   string `json:"tokenName"`
+	Href        string `json:"href"`
+	PictureLink string `json:"pictureLink"`
 }
 
 func (c *Client) GetUserInfo() (UserInfoResponse, error) {

@@ -5,27 +5,37 @@ import (
 	"log"
 )
 
+type FormulaReference struct {
+	Id     string        `json:"id"`
+	Type   string        `json:"type"`
+	Href   string        `json:"href"`
+	Name   string        `json:"name"`
+	Parent PageReference `json:"parent"`
+}
+
 type Formula struct {
-	Id    string      `json:"id"`
-	Type  string      `json:"type"`
-	Href  string      `json:"href"`
-	Name  string      `json:"name"`
+	FormulaReference
 	Value interface{} `json:"value"`
 }
 
 type ListFormulasResponse struct {
-	Formulas []Formula `json:"items"`
+	Formulas []FormulaReference `json:"items"`
 	PaginationResponse
+}
+
+type ListFormulasPayload struct {
+	SortBy string `json:"sortBy" url:"sortBy,omitempty"`
+	PaginationPayload
 }
 
 type GetFormulaResponse struct {
 	Formula
 }
 
-func (c *Client) ListFormulas(docId string, paginationPayload PaginationPayload) (ListFormulasResponse, error) {
+func (c *Client) ListFormulas(docId string, payload ListFormulasPayload) (ListFormulasResponse, error) {
 	docPath := fmt.Sprintf("docs/%s/formulas", docId)
 	var formulasResp ListFormulasResponse
-	err := c.apiCall("GET", docPath, paginationPayload, &formulasResp)
+	err := c.apiCall("GET", docPath, payload, &formulasResp)
 	if err != nil {
 		log.Print("Unable to make api call with error.")
 	}
