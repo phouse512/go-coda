@@ -3,7 +3,6 @@ package coda
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -16,10 +15,11 @@ type ErrorResponse struct {
 func buildError(resp *http.Response) error {
 	var errResp ErrorResponse
 	err := json.NewDecoder(resp.Body).Decode(&errResp)
-
 	if err != nil {
-		log.Print("Unable to deserialize Coda Error object.")
-		return err
+		errResp = ErrorResponse{
+			StatusCode:    resp.StatusCode,
+			StatusMessage: "Unknown Error",
+		}
 	}
 
 	switch errResp.StatusCode {
@@ -35,6 +35,8 @@ func buildError(resp *http.Response) error {
 		return ResourceDeletedError{err: errResp.StatusMessage}
 	case 429:
 		return RateLimitError{err: errResp.StatusMessage}
+	case 502:
+		return InternalError{err: errResp.StatusMessage}
 	default:
 		return ApiError{err: errResp.StatusMessage}
 	}
@@ -97,4 +99,12 @@ type UnauthorizedError struct {
 
 func (e UnauthorizedError) Error() string {
 	return fmt.Sprintf("Token does not have access: %s", e.err)
+}
+
+type InternalError struct {
+	err string
+}
+
+func (e InternalError) Error() string {
+	return fmt.Sprintf("Internal api error: %s", e.err)
 }
